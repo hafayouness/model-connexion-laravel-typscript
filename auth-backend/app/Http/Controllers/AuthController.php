@@ -52,7 +52,7 @@ class AuthController extends Controller
         
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
-            $token = $user->createToken('YourAppName')->plainTextToken;
+            $token = $user->createToken('generateToken')->plainTextToken;
 
             return response()->json([
                 'message' => 'User signed in successfully',
@@ -62,5 +62,18 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
+    public function getAllUsers(){
+        $users = User::all();
 
+        return response()->json([
+            'users'=>$users
+        ]
+           
+        );
+
+    }
+    public function getAuthenticatedUser(Request $request)
+    {
+        return response()->json($request->user());
+    }
 }
