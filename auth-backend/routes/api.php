@@ -19,7 +19,9 @@ use App\Http\Controllers\CourseController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', [AuthController::class,"getAuthenticatedUser"]);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
+});
 Route::get('/hello', function () {
     return 'welcome';
 });

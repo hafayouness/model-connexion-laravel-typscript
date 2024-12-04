@@ -29,7 +29,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user', // ou 'admin'
+            'role' => 'admin', // ou 'admin'
         ]);
 
     
@@ -73,8 +73,7 @@ class AuthController extends Controller
         );
 
     }
-    public function getAuthenticatedUser(Request $request)
-    {
-        return response()->json($request->user());
+    public function getAuthenticatedUser(Request $request) {
+        return $request->user();
     }
 }
