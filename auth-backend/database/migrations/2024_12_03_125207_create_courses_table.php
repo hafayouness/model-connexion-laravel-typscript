@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string("title");
             $table->string('slug')->unique();
             $table->text('description');
-            $table->text("about_course");
+            $table->enum('type', ['online', 'offline', 'hybrid']);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

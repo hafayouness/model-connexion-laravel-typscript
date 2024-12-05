@@ -7,36 +7,68 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
 
+    // public function signup(Request $request)
+    // {
+      
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email|unique:users,email',
+    //         'password' => 'required|string|min:8|confirmed',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
+
+       
+    //     $user = User::create([
+    //         'name' => $request->name,
+    //         'email' => $request->email,
+    //         'password' => Hash::make($request->password),
+    //         'role' => 'admin', // ou 'admin'
+    //     ]);
+
+    
+    //     return response()->json([
+    //         'message' => 'User created successfully',
+    //         'user' => $user
+    //     ], 201);
+    // }
     public function signup(Request $request)
     {
-      
+       try {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required_with:password'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-       
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'admin', // ou 'admin'
+             'role' => 'user', 
+            //  "admin"
         ]);
 
-    
         return response()->json([
             'message' => 'User created successfully',
             'user' => $user
         ], 201);
+       } catch (\Exception $e) {
+        Log::error('Signup error: ' . $e->getMessage());
+        return response()->json(['message' => 'Server error', 'error' => $e->getMessage()], 500);
+       }
     }
     public function signin(Request $request)
     {

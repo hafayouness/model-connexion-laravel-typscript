@@ -18,25 +18,33 @@ use App\Http\Controllers\CourseController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['throttle:100,1'])->group(function () {
+    // Vos routes existantes
     Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
-});
-Route::get('/hello', function () {
-    return 'welcome';
-});
-
-Route::get('/users',[AuthController::class,"getAllUsers"] );
-Route::post("signup",[AuthController::class,"signup"]);
-Route::post("signin",[AuthController::class,"signin"]);
-Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name("google_auth");
-Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
-Route::middleware('auth:sanctum')->get('/dashboard', function (Request $request) {
-    return response()->json([
-        'user' => $request->user(),
-        'role' => $request->user()->role, 
-    ]);
+    Route::get('/hello', function () {
+        return 'welcome';
+    });
+    Route::get('/users',[AuthController::class,"getAllUsers"]);
+    Route::post("signup",[AuthController::class,"signup"]);
+    Route::post("signin",[AuthController::class,"signin"]);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
+    });
+    
+    Route::post('courses', [CourseController::class,"store"]);
+    Route::get("/courses/{id}", [CourseController::class,"show"]);  
+    Route::get('courses', [CourseController::class, 'index']);
 });
 
-Route::resource('courses', CourseController::class);
-Route::get("/courses/{id}", [CourseController::class],"show");  
+
+
+// Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name("google_auth");
+// Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+// Route::middleware('auth:sanctum')->get('/dashboard', function (Request $request) {
+//     return response()->json([
+//         'user' => $request->user(),
+//         'role' => $request->user()->role, 
+//     ]);
+// });
+
+ 
