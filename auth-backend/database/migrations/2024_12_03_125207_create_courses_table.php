@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string("title");
             $table->string('slug')->unique();
             $table->text('description');
-            $table->enum('type', ['online', 'offline', 'hybrid']);
-            $table->string('image')->nullable();
+            $table->string('type');
+            $table->string('image_url')->nullable();
             $table->timestamps();
         });
     }
@@ -32,5 +32,6 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('courses');
+
     }
 };

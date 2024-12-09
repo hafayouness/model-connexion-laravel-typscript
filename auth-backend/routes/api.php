@@ -33,7 +33,7 @@ Route::middleware(['throttle:100,1'])->group(function () {
     
     Route::post('courses', [CourseController::class,"store"]);
     Route::get("/courses/{id}", [CourseController::class,"show"]);  
-    Route::get('courses', [CourseController::class, 'index']);
+    Route::get('index', [CourseController::class, 'index']);
 });
 
 

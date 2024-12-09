@@ -12,33 +12,7 @@ use Illuminate\Support\Facades\Log;
 class AuthController extends Controller
 {
 
-    // public function signup(Request $request)
-    // {
-      
-    //     $validator = Validator::make($request->all(), [
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email|unique:users,email',
-    //         'password' => 'required|string|min:8|confirmed',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json(['errors' => $validator->errors()], 422);
-    //     }
-
-       
-    //     $user = User::create([
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'password' => Hash::make($request->password),
-    //         'role' => 'admin', // ou 'admin'
-    //     ]);
-
-    
-    //     return response()->json([
-    //         'message' => 'User created successfully',
-    //         'user' => $user
-    //     ], 201);
-    // }
+   
     public function signup(Request $request)
     {
        try {
@@ -57,7 +31,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-             'role' => 'user', 
+             'role' => 'admin', 
             //  "admin"
         ]);
 
