@@ -21,6 +21,7 @@ class AuthController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|string|min:8|confirmed',
                 'password_confirmation' => 'required_with:password',
+                'role' => 'required|in:admin,professor,student',
                 'profile_photo' => 'nullable|string', 
             ]);
     
@@ -86,7 +87,7 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role' => $request->role ?? 'admin', 
+                'role' => $request->role,  
                 'profile_photo' => $profilePhotoPath,
             ]);
     
@@ -151,5 +152,81 @@ class AuthController extends Controller
     }
     public function getAuthenticatedUser(Request $request) {
         return $request->user();
+    }
+
+    public function update(Request $request, $id){
+        $validator = Validator::make($request->all(),[
+            'name'=>"sometimes|string|max:255",
+            "email"=> "sometimes|email|unique:users,email," . $id,
+            "profile_photo" =>"sometimes|string",
+        ]);
+        if($validator->fails()){
+            return response()->json(['errors'=> $validator->errors()],422);
+        }
+        $user = User::findOrFail($id);
+        if(!$user) {
+            return response()->json(["error"=>"user not found"],404);
+        }
+        if($request->user()->id !=$id){
+            return response()->json(['error'=>"Unauthorized"],403);
+        }
+
+        $user->name=$request->input("name", $user->name);
+        $user->email = $request->input("email",$user->email);
+
+        // if($request->filled("profile_photo")){
+        //     $base64Image = $request->input("profile_photo");
+        //     $imageData = base64_decode($base64Image);
+
+        //     $imageName = uniqid() . ".png";
+        //     $imagePath = "profile_photos/" . $imageName;
+
+        //     Storage::disk('public')->put($imagePath, $imageData);
+
+        //     if($user->profile_photo){
+        //         Storage::disk('public')->delete($user->profile_photo);
+        //     }
+
+        //     $user->profile_photo = $imagePath;
+
+        // }
+        if ($request->filled("profile_photo")) {
+            $base64Image = $request->input("profile_photo");
+            $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);
+            $imageData = base64_decode($base64Image);
+        
+            if ($imageData === false) {
+                return response()->json(['error' => 'Invalid base64 image'], 422);
+            }
+        
+           
+            $imageName = Str::uuid() . '.jpg';
+            $imagePath = "profile_photos/" . $imageName;
+        
+           
+            Storage::disk('public')->put($imagePath, $imageData);
+        
+            
+            if ($user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+        
+            
+            $user->profile_photo = $imagePath;
+        }
+        
+       
+        $user->save();
+        return response()->json([
+            "message" => "User updated successfully",
+            "user" => [
+                "id" => $user->id,
+                "name" => $user->name,
+                "email" => $user->email,
+                "profile_photo" => $user->profile_photo ? asset('storage/' . $user->profile_photo) : null,
+            ],
+        ], 200);
+
+
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-// use Illuminate\Support\Facades\Log;
+
 use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
@@ -23,13 +23,15 @@ class CourseController extends Controller
    
     public function store(Request $request)
     {
-    // Valider les données
+   
     $validator = Validator::make($request->all(), [
         'title' => 'required|string|max:255',
         'slug' => 'required|string|max:255',
         'description' => 'required|string',
         'type' => 'required|string',
         'image' => 'required|string', 
+        'level' => 'required|string', 
+        'sub_level' => 'required|string',
     ]);
 
     if ($validator->fails()) {
@@ -39,20 +41,16 @@ class CourseController extends Controller
         ], 422);
     }
 
-    // Traiter l'image Base64
+    
     $imageData = $request->input('image');
     if (strpos($imageData, 'base64') !== false) {
         $imageData = explode(',', $imageData)[1]; 
     }
 
     try {
-        // Générer un nom de fichier unique
+       
         $fileName = 'image_' . time() . '.png';
-
-        // Stocker l'image dans le disque public
         Storage::disk('public')->put($fileName, base64_decode($imageData));
-
-        // Générer l'URL de l'image
         $imagePath = Storage::url($fileName);
 
         
@@ -62,6 +60,8 @@ class CourseController extends Controller
             'description' => $request->input('description'),
             'type' => $request->input('type'),
             'image_url' => $imagePath,
+            "level"=>$request->input('level'),
+            'sub_level' => $request->input('sub_level'),
         ]);
 
         

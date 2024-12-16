@@ -30,6 +30,7 @@ Route::middleware(['throttle:100,1'])->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
     });
+    Route::middleware('auth:sanctum')->put('/user/{id}', [AuthController::class, 'update']);
     
     Route::post('courses', [CourseController::class,"store"]);
     Route::get("/courses/{id}", [CourseController::class,"show"]);  

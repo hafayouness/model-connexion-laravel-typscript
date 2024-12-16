@@ -20,6 +20,8 @@ return new class extends Migration
             $table->text('description');
             $table->string('type');
             $table->string('image_url')->nullable();
+            $table->string('level')->nullable(); 
+            $table->string('sub_level')->nullable();
             $table->timestamps();
         });
     }
