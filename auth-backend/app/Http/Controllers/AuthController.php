@@ -174,22 +174,7 @@ class AuthController extends Controller
         $user->name=$request->input("name", $user->name);
         $user->email = $request->input("email",$user->email);
 
-        // if($request->filled("profile_photo")){
-        //     $base64Image = $request->input("profile_photo");
-        //     $imageData = base64_decode($base64Image);
-
-        //     $imageName = uniqid() . ".png";
-        //     $imagePath = "profile_photos/" . $imageName;
-
-        //     Storage::disk('public')->put($imagePath, $imageData);
-
-        //     if($user->profile_photo){
-        //         Storage::disk('public')->delete($user->profile_photo);
-        //     }
-
-        //     $user->profile_photo = $imagePath;
-
-        // }
+        
         if ($request->filled("profile_photo")) {
             $base64Image = $request->input("profile_photo");
             $base64Image = preg_replace('#^data:image/\w+;base64,#i', '', $base64Image);

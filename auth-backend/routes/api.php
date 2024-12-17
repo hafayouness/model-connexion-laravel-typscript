@@ -33,8 +33,9 @@ Route::middleware(['throttle:100,1'])->group(function () {
     Route::middleware('auth:sanctum')->put('/user/{id}', [AuthController::class, 'update']);
     
     Route::post('courses', [CourseController::class,"store"]);
-    Route::get("/courses/{id}", [CourseController::class,"show"]);  
+    // Route::get("/courses/{id}", [CourseController::class,"show"]);  
     Route::get('index', [CourseController::class, 'index']);
+    Route::put('/courses/{id}', [CourseController::class, 'update']);
 });
 
 

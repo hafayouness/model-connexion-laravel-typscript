@@ -82,13 +82,40 @@ class CourseController extends Controller
    
     
 
-    public function show($id){
-        $course = Course::findOrFail($id);
-        return response()->json($course);
-     }
+    // public function show($id){
+    //     $course = Course::findOrFail($id);
+    //     return response()->json($course);
+    //  }
         
     
-   
+   public function update(Request $request, $id ){
+    $validated = $request->validate([
+        "title" => "sometimes|string|max:255",
+        "description"=>"sometimes|string",
+        "imageUrl"=> "sometimes|string",
+        "type"=>"sometimes|string",
+        "level"=>"sometimes|string",
+        "sub_level"=>"sometimes|string"
+    ]
+
+    ); 
+    $course = Course::findOrFail($id);
+    if ($request->hasFile('imageUrl')) {
+        $imagePath = $request->file('imageUrl')->store('images', 'public');
+        $validated['imageUrl'] = $imagePath;
+    }
+
+    $course->update($validated);
+
+
+    return response()->json($course,200);
+
+
+
+
+
+
+   }
     
 
 }
