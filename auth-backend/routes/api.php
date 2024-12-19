@@ -1,12 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SocialAuthController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
-use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LikeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,35 +16,37 @@ use App\Http\Controllers\CourseController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::middleware(['throttle:100,1'])->group(function () {
-    // Vos routes existantes
-    Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
+
+// Routes publiques (sans authentification)
+Route::group([], function () {
     Route::get('/hello', function () {
-        return 'welcome';
+        return response()->json(['message' => 'Welcome']);
     });
-    Route::get('/users',[AuthController::class,"getAllUsers"]);
-    Route::post("signup",[AuthController::class,"signup"]);
-    Route::post("signin",[AuthController::class,"signin"]);
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
-    });
-    Route::middleware('auth:sanctum')->put('/user/{id}', [AuthController::class, 'update']);
-    
-    Route::post('courses', [CourseController::class,"store"]);
-    Route::get("/courses/{id}", [CourseController::class,"show"]);  
-    Route::get('index', [CourseController::class, 'index']);
-    Route::put('/courses/{id}', [CourseController::class, 'update']);
+
+    Route::post('/signup', [AuthController::class, 'signup']);
+    Route::post('/signin', [AuthController::class, 'signin']);
 });
 
+// Routes nécessitant une authentification (auth:sanctum)
+Route::middleware('auth:sanctum')->group(function () {
+    // Utilisateur authentifié
+    Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
+    Route::put('/user/{id}', [AuthController::class, 'update']);
 
+    // Actions liées aux cours
+    Route::post('/courses', [CourseController::class, 'store'])->middleware('role:professor'); 
+    Route::get('/courses/{id}', [CourseController::class, 'show']);
+    Route::put('/courses/{id}', [CourseController::class, 'update'])->middleware('role:professor'); 
+    Route::delete('/courses/{id}', [CourseController::class, 'destroy'])->middleware('role:professor'); 
+    Route::get('/index', [CourseController::class, 'index']);
 
-// Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name("google_auth");
-// Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
-// Route::middleware('auth:sanctum')->get('/dashboard', function (Request $request) {
-//     return response()->json([
-//         'user' => $request->user(),
-//         'role' => $request->user()->role, 
-//     ]);
-// });
+    // Système de "like" pour les cours
+    Route::post('/courses/{id}/like', [LikeController::class, 'like']);
+    Route::post('/courses/{id}/unlike', [LikeController::class, 'unlikeCourse']);
+    Route::get('/courses/{id}/is-liked', [CourseController::class, 'isLiked']);
+});
 
- 
+// Gestion de la limitation des requêtes
+Route::middleware('throttle:500,1')->group(function () {
+    Route::get('/users', [AuthController::class, 'getAllUsers']);
+});

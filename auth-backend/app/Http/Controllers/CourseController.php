@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Validator;
 
@@ -116,6 +117,29 @@ class CourseController extends Controller
 
 
    }
-    
+
+   public function destroy($id)
+   {
+       try {
+  
+           $course = Course::findOrFail($id);
+   
+           
+           $course->delete();
+   
+           return response()->json(["message" => "Course deleted successfully"], 200);
+       } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+           
+           return response()->json(["message" => "Course not found"], 404);
+       } catch (\Exception $e) {
+          
+           Log::error("Error deleting course with ID {$id}: " . $e->getMessage());
+           return response()->json(["message" => "Failed to delete course", "error" => $e->getMessage()], 500);
+       }
+   }
+   
+   
+   
+   
 
 }

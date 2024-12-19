@@ -9,5 +9,9 @@ class Course extends Model
 {
     use HasFactory;
     protected $fillable = ["title", "slug","description",'type', 'level', 'sub_level', 'image_url'];
+    
+    public function likeedByUsers(){
+        return $this->belongsToMany(User::class, 'likes')->withTimestamps();
+    }
 
 }
