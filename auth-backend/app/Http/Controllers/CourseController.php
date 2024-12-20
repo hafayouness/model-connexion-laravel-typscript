@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Course;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -139,7 +141,67 @@ class CourseController extends Controller
    }
    
    
+   public function toggleLike($id)
+   {
+       $user = auth()->user();
+       $course = Course::find($id);
    
+       if (!$course) {
+           return response()->json(['error' => 'Course not found'], 404);
+       }
    
+      
+       if ($course->likes()->where('user_id', $user->id)->exists()) {
+         
+           $course->likes()->detach($user->id);
+           return response()->json(['message' => 'Course unliked']);
+       }
+   
+       
+       $course->likes()->attach($user->id);
+       return response()->json(['message' => 'Course liked']);
+   }
+   
+   public function isLiked($id)
+   {
+       $user = auth()->user();
+       $course = Course::findOrFail($id);
+   
+       if (!$course) {
+           return response()->json(['error' => 'Course not found'], 404);
+       }
+   
+       
+       $isLiked = $course->likes()->where('user_id', $user->id)->exists();
+   
+       return response()->json(['isLiked' => $isLiked]);
+   }
+     
+  public function addComment(Request $request, $id){
+    $validated = $request->validate([
+        "comment" => " required|string|max:255",
+    ]);
 
+    $course = Course::findOrFail($id);
+    
+    $comment = Comment::create([
+        "comment" => $validated['comment'],
+        "user_id" => auth()->id(),
+        "course_id" => $course->id,
+    ]);
+    return response()->json(['message'=>"Commentaire ajoute avec succes ", 'comment'=>$comment]);
+  }
+   public function getCommentForUser($id){
+    $user = User::findOrFail($id);
+
+    $comments = $user->comments;
+
+    return response()->json([
+        "user"=> $user,
+        'comments'=>$comments
+    ]);
+
+
+
+   }
 }

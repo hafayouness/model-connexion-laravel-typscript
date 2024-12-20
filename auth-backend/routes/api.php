@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LikeController;
@@ -29,24 +30,30 @@ Route::group([], function () {
 
 // Routes nécessitant une authentification (auth:sanctum)
 Route::middleware('auth:sanctum')->group(function () {
-    // Utilisateur authentifié
+    
     Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
     Route::put('/user/{id}', [AuthController::class, 'update']);
+    
 
-    // Actions liées aux cours
+    
     Route::post('/courses', [CourseController::class, 'store'])->middleware('role:professor'); 
     Route::get('/courses/{id}', [CourseController::class, 'show']);
     Route::put('/courses/{id}', [CourseController::class, 'update'])->middleware('role:professor'); 
     Route::delete('/courses/{id}', [CourseController::class, 'destroy'])->middleware('role:professor'); 
     Route::get('/index', [CourseController::class, 'index']);
 
-    // Système de "like" pour les cours
-    Route::post('/courses/{id}/like', [LikeController::class, 'like']);
-    Route::post('/courses/{id}/unlike', [LikeController::class, 'unlikeCourse']);
+    
+    Route::post('/courses/{id}/toggle-like', [CourseController::class, 'toggleLike']);
     Route::get('/courses/{id}/is-liked', [CourseController::class, 'isLiked']);
+    Route::middleware('auth:sanctum')->post('/courses/{id}/comment', [CourseController::class, 'addComment']);
+    Route::get('/users/{id}/comments', [CourseController::class, 'getCommentForUser']);
+
+    
+
+
 });
 
-// Gestion de la limitation des requêtes
+
 Route::middleware('throttle:500,1')->group(function () {
     Route::get('/users', [AuthController::class, 'getAllUsers']);
 });
