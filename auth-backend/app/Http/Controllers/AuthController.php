@@ -140,6 +140,11 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
+    public function showLoginForm()
+    {
+       
+        return view('auth.login');
+    }
     public function getAllUsers(){
         $users = User::all();
 

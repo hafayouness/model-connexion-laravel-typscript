@@ -46,7 +46,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/courses/{id}/toggle-like', [CourseController::class, 'toggleLike']);
     Route::get('/courses/{id}/is-liked', [CourseController::class, 'isLiked']);
     Route::middleware('auth:sanctum')->post('/courses/{id}/comment', [CourseController::class, 'addComment']);
-    Route::get('/users/{id}/comments', [CourseController::class, 'getCommentForUser']);
+
+    Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::get('/courses/{id}/comments', [CourseController::class, 'getComments']);
+    Route::post('/comments/{id}/like', [CommentController::class, 'toggleLike']);
+    Route::put('/comments/{id}',[CommentController::class, 'updateComment']);
+    Route::delete('/comments/{id}',[CommentController::class, 'deleteComment']);
+
 
     
 

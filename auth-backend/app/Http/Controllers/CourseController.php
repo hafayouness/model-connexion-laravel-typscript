@@ -191,17 +191,37 @@ class CourseController extends Controller
     ]);
     return response()->json(['message'=>"Commentaire ajoute avec succes ", 'comment'=>$comment]);
   }
-   public function getCommentForUser($id){
-    $user = User::findOrFail($id);
 
-    $comments = $user->comments;
+    public function getComments($id)
+    {
+      try 
+      {
+        
+        $course = Course::find($id);
+        if (!$course) {
+            return response()->json(['message' => 'Course not found'], 404);
+        }
 
-    return response()->json([
-        "user"=> $user,
-        'comments'=>$comments
-    ]);
+       
+        $comments = Comment::where('course_id', $id)
+            ->with('user:id,name,profile_photo') 
+            ->get();
 
-
-
+        return response()->json($comments);
+    } catch (\Exception $e) {
+        
+        return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+     }
    }
+
+
+
+ 
+
+ 
+
+   
+
+
+
 }
