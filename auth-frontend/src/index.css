@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* .sign-width {
+  max-width: 900px;
+} */
+.imageCss {
+  width: 60%;
+  margin: 20px auto;
+  border-radius: 8px;
+}
+.description {
+  width: 65%;
+  margin: 10px auto;
+  font-style: normal;
+}
