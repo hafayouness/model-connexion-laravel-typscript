@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LikeController;
@@ -52,6 +53,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/comments/{id}/like', [CommentController::class, 'toggleLike']);
     Route::put('/comments/{id}',[CommentController::class, 'updateComment']);
     Route::delete('/comments/{id}',[CommentController::class, 'deleteComment']);
+    Route::get('comments/{id}/isLiked', [CommentController::class, 'isLiked']);
+    Route::get('/comments/{id}/liked', [CommentController::class, 'getLikedComments']);
+    Route::post('/contact',[ContactController::class, 'handleForm']);
+
+
+
 
 
     
