@@ -73,3 +73,14 @@ interface Comment {
   likedByUser: boolean;
   userId: number;
 }
+
+interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+}
+interface ValidationErrors {
+  name?: string[];
+  email: string[];
+  message: string[];
+}

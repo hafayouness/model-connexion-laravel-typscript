@@ -55,7 +55,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/comments/{id}',[CommentController::class, 'deleteComment']);
     Route::get('comments/{id}/isLiked', [CommentController::class, 'isLiked']);
     Route::get('/comments/{id}/liked', [CommentController::class, 'getLikedComments']);
-    Route::post('/contact',[ContactController::class, 'handleForm']);
+   
+    Route::post('/contact', [ContactController::class, 'store']);
+
 
 
 

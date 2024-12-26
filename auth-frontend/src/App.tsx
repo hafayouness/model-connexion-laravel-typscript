@@ -17,6 +17,7 @@ import Courses from "./pages/Courses";
 import CoursePdf from "./components/CoursePdf";
 import UpdateCourse from "./components/UpdateCourse";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 const App: React.FC = () => {
   return (
@@ -38,6 +39,7 @@ const App: React.FC = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
         <Fouter />
       </Router>

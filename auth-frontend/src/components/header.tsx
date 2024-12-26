@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Logo from "../assets/logo.png";
 import api from "../api";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../authContext";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { FaCog, FaMoon, FaQuestionCircle } from "react-icons/fa";
@@ -14,6 +14,7 @@ const Header: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
   const navbarRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -48,7 +49,7 @@ const Header: React.FC = () => {
       }
     };
     fetchUser();
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -69,13 +70,13 @@ const Header: React.FC = () => {
       <div>
         <ul className="flex items-center justify-center gap-10">
           <li className="text-gray-400 hover:text-blue-400">
-            <a href="/courses">Courses</a>
+            <Link to="/courses">Courses</Link>
           </li>
           <li className="text-gray-400 hover:text-blue-400">
-            <a href="/about">About us</a>
+            <Link to="/about">About us</Link>
           </li>
           <li className="text-gray-400 hover:text-blue-400">
-            <a href="/contact">Contact</a>
+            <Link to="/contact">Contact</Link>
           </li>
         </ul>
       </div>
@@ -83,13 +84,12 @@ const Header: React.FC = () => {
         {isAuthenticated && user ? (
           <div className="flex items-center gap-4 mr-2 relative">
             <div
-              className="w-12 h-12 rounded-full flex items-center bg-gray-200 justify-center overflow-hidden border-2 border-blue-500 hover:border-blue-700 object-cover "
+              className="w-12 h-12 rounded-full flex items-center bg-gray-200 justify-center overflow-hidden border-2 border-blue-500 hover:border-blue-700 object-cover"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <img
                 src={`http://localhost:8000/storage/${user?.profile_photo}`}
                 alt="Profile Preview"
-                // className="w-12 h-12 object-contain"
               />
               <div className="absolute bottom-0 right-0 w-4 h-4 bg-gray-300 rounded-full border-none flex items-center justify-center">
                 <span className="text-black">
@@ -163,12 +163,18 @@ const Header: React.FC = () => {
           </div>
         ) : (
           <>
-            <button className="border px-5 py-1 rounded-lg bg-blue-500 text-white hover:bg-white hover:text-blue-500 hover:border">
-              <a href="/signin">Sign in</a>
-            </button>
-            <button className="border px-5 py-1 rounded-lg mr-4 bg-blue-500 text-white hover:bg-white hover:text-blue-500 hover:border">
-              <a href="/signup">Sign up</a>
-            </button>
+            <Link
+              to="/signin"
+              className="border px-5 py-1 rounded-lg bg-blue-500 text-white hover:bg-white hover:text-blue-500 hover:border"
+            >
+              Sign in
+            </Link>
+            <Link
+              to="/signup"
+              className="border px-5 py-1 rounded-lg mr-4 bg-blue-500 text-white hover:bg-white hover:text-blue-500 hover:border"
+            >
+              Sign up
+            </Link>
           </>
         )}
       </div>

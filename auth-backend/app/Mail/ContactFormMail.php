@@ -6,24 +6,26 @@ use App\Models\Contact;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ContactFormMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $contact;
+    public $data;
 
-    public function __construct(Contact $contact)
+    public function __construct(array $data)
     {
-        $this->contact = $contact;
+        $this->data = $data;
     }
 
     public function build()
     {
         return $this->view('emails.contact')
-        ->with('name', $this->contact['name'])
-        ->with('email', $this->contact['email'])
-        ->with('message', $this->contact['message']);
+                    ->subject('Nouveau message de contact')
+                    ->with(['data' => $this->data]);
     }
+
+    
 }
 

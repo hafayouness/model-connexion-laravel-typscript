@@ -2,35 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contact;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactFormMail;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
-    //
-    public function showForm()
+    public function store(Request $request)
     {
-        return view('contact');
-    }
+        try {
+            $validated = $request->validate([
+                "name" => "required|string|max:255",
+                "email" => "required|email",
+                "message" => "required|string",
+            ]);
 
-    public function handleForm(Request $request){
+            // Spécifiez une adresse email de destination fixe
+            $destinationEmail = 'ahfa.youness@gmail.com'; // Remplacez par votre email
+            // OU utilisez celui de votre .env
+            // $destinationEmail = env('MAIL_FROM_ADDRESS');
 
-        $validated = $request->validate([
-            "name" => "required|string|max:255",
-            "email"=> " required|email",
-            "message" =>"required|string",
-        ]);
+            Mail::to($destinationEmail)->send(new ContactFormMail($validated));
 
-        $contact = Contact::create([
-            "name"=> $validated["name"],
-            "email"=> $validated["email"],
-            "message"=> $validated["message"],
-        ]);
-        Mail::to('ahfa.youness@gmail.com')->send(new ContactFormMail($contact));;
-        return response()->json(['success' => 'Message envoyé avec succès!']);
+            return response()->json([
+                'message' => 'Message envoyé avec succès'
+            ], 200);
 
+        } catch (\Exception $e) {
+            Log::error('Erreur d\'envoi d\'email:', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return response()->json([
+                'error' => 'Erreur lors de l\'envoi du message',
+                'details' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
     }
 }
