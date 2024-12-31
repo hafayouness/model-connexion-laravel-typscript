@@ -13,14 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comment_likes', function (Blueprint $table) {
+        Schema::create('comments_likes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('comment_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-            $table->unsignedBigInteger('comment_id');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('comment_id')->references('id')->on('comments')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unique(['comment_id', 'user_id']);
+            // Empêche les doublons de likes
+            $table->unique(['user_id', 'comment_id']);
         });
     }
 

@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api";
-import CourseCard from "../components/CourseCard";
-import { useAuth } from "../authContext";
+import CourseCard from "./CourseCard";
 
-const Courses = () => {
+const RecentsCourse: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const fetchCourses = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await api.get("/index?limit=10");
+        const response = await api.get("/index?limit=6");
         const data = response.data;
 
         const formattedData = data.map((course: any) => ({
@@ -35,7 +34,9 @@ const Courses = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">All Courses</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-500">
+        Recent Courses
+      </h1>
 
       {loading ? (
         <div className="flex items-center justify-center w-full h-96">
@@ -69,4 +70,4 @@ const Courses = () => {
   );
 };
 
-export default Courses;
+export default RecentsCourse;

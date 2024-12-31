@@ -65,7 +65,9 @@ const Header: React.FC = () => {
   return (
     <div className="flex items-center justify-between sticky top-0 bg-white z-50 shadow-lg">
       <div className="">
-        <img src={Logo} alt="logo de projet" className="w-16 h-15 ml-7" />
+        <Link to="/">
+          <img src={Logo} alt="logo de projet" className="w-16 h-15 ml-7" />
+        </Link>
       </div>
       <div>
         <ul className="flex items-center justify-center gap-10">
@@ -84,12 +86,13 @@ const Header: React.FC = () => {
         {isAuthenticated && user ? (
           <div className="flex items-center gap-4 mr-2 relative">
             <div
-              className="w-12 h-12 rounded-full flex items-center bg-gray-200 justify-center overflow-hidden border-2 border-blue-500 hover:border-blue-700 object-cover"
+              className="w-12 h-12 rounded-full flex items-center bg-gray-200 justify-center overflow-hidden border-2 border-blue-500 hover:border-blue-700 object-contain"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <img
                 src={`http://localhost:8000/storage/${user?.profile_photo}`}
                 alt="Profile Preview"
+                className="w-full h-full object-contain "
               />
               <div className="absolute bottom-0 right-0 w-4 h-4 bg-gray-300 rounded-full border-none flex items-center justify-center">
                 <span className="text-black">
@@ -115,7 +118,7 @@ const Header: React.FC = () => {
                         <img
                           src={`http://localhost:8000/storage/${user?.profile_photo}`}
                           alt="Profile Preview"
-                          className="w-12 h-12 rounded-full object-contain border-2 border-blue-500 mb-2"
+                          className="w-10 h-10 rounded-full object-contain border-2 border-blue-500 mb-2"
                         />
                         <span className="text-black font-bold text-2xl">
                           {user?.name}

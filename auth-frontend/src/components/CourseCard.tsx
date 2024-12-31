@@ -111,6 +111,9 @@ const CourseCard: React.FC<CourseCardProps> = ({
       imageUrl,
       description: cleanDescription,
       type,
+      level,
+      sub_level,
+      isAuthenticated,
     };
     navigate("/full-Contenu", { state: CourseData });
   };

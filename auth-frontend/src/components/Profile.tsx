@@ -107,7 +107,7 @@ const Profile: React.FC = () => {
                     `http://localhost:8000/storage/${user?.profile_photo}?t=${photoUpdateTimestamp}`
                   }
                   alt="Profile Preview"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
             </label>

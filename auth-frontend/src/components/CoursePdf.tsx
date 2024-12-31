@@ -8,6 +8,8 @@ import api from "../api";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
 import { FcLike } from "react-icons/fc";
+import { MouseEventHandler } from "react";
+import RecentsCourse from "./recentsCourse";
 
 const CoursePdf: React.FC = () => {
   const location = useLocation();
@@ -16,6 +18,66 @@ const CoursePdf: React.FC = () => {
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [likesCount, setLikesCount] = useState<number>(0);
+  const [commentLikes, setCommentLikes] = useState<{ [key: number]: boolean }>(
+    {}
+  );
+  const [commentLikeCounts, setCommentLikeCounts] = useState<{
+    [key: number]: number;
+  }>({});
+  const initializeLikes = async () => {
+    const likesState: { [key: number]: boolean } = {};
+    const countsState: { [key: number]: number } = {};
+
+    for (const comment of comments) {
+      try {
+        const response = await api.get(`/comments/${comment.id}/isLiked`);
+        likesState[comment.id] = response.data.isLiked;
+        countsState[comment.id] = response.data.likesCount || 0;
+      } catch (error) {
+        console.error(
+          `Error fetching like status for comment ${comment.id}:`,
+          error
+        );
+      }
+    }
+
+    setCommentLikes(likesState);
+    setCommentLikeCounts(countsState);
+  };
+  useEffect(() => {
+    if (comments.length > 0) {
+      initializeLikes();
+    }
+  }, [comments]);
+  const handleLike = async (commentId: number) => {
+    // Optimistic update
+    setCommentLikes((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
+    setCommentLikeCounts((prev) => ({
+      ...prev,
+      [commentId]: prev[commentId] + (commentLikes[commentId] ? -1 : 1),
+    }));
+
+    try {
+      const response = await api.post(`/comments/${commentId}/like`);
+
+      if (response.data.message) {
+      }
+    } catch (error) {
+      setCommentLikes((prev) => ({
+        ...prev,
+        [commentId]: !prev[commentId],
+      }));
+      setCommentLikeCounts((prev) => ({
+        ...prev,
+        [commentId]: prev[commentId] + (commentLikes[commentId] ? 1 : -1),
+      }));
+      console.error("Error toggling like:", error);
+    }
+  };
 
   const cleanDescription = DOMPurify.sanitize(description);
   const commentsSectionRef = useRef<HTMLDivElement>(null);
@@ -116,40 +178,7 @@ const CoursePdf: React.FC = () => {
   useEffect(() => {
     getComments();
   }, [id]);
-  const handleLike = async () => {
-    try {
-      const response = await api.post(`/comments/${id}/like`);
-      setIsLiked((prevState) => !prevState);
 
-      alert(response.data.message);
-      window.location.reload();
-    } catch (error: any) {
-      console.error("Error toggling like:", error.response);
-    }
-  };
-
-  // const handleLike = async (id: number) => {
-  //   try {
-  //     const response = await api.post(`/comments/${id}/like`);
-  //     console.log(response.data);
-  //     alert("comment liked");
-  //     setComments(
-  //       comments.map((comment) =>
-  //         comment.id === id
-  //           ? {
-  //               ...comment,
-  //               likes: comment.likedByUser
-  //                 ? comment.likes - 1
-  //                 : comment.likes + 1,
-  //               likedByUser: !comment.likedByUser,
-  //             }
-  //           : comment
-  //       )
-  //     );
-  //   } catch (error: any) {
-  //     console.error("Error liking comment:", error);
-  //   }
-  // };
   const handleEdit = async (id: number, newText: string) => {
     try {
       const response = await api.put(`/comments/${id}`, { comment: newText });
@@ -175,32 +204,34 @@ const CoursePdf: React.FC = () => {
     }
   };
 
-  // const getlikes = async () => {
-  //   try {
-  //     const response = await api.get(`/comments/${id}/isLiked`);
-  //     setIsLiked(response.data.isLiked);
-  //     console.log(response.data.isLiked);
-  //   } catch (error) {
-  //     console.error("Error checking if liked:", error);
-  //   }
-  // };
-
-  // const getLikes = async (id: number) => {
-  //   try {
-  //     const response = await api.get(`/comments/${id}/isLiked`, {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("token")}`, // ou selon la manière dont vous stockez le token
-  //       },
-  //     });
-  //     return response.data.isLiked;
-  //   } catch (error) {
-  //     console.error("Error checking if liked:", error);
-  //     return false;
-  //   }
-  // };
+  const getlikes = async () => {
+    try {
+      const response = await api.get(`/comments/${id}/isLiked`);
+      setIsLiked(response.data.isLiked);
+      console.log(response.data.isLiked);
+    } catch (error) {
+      console.error("Error checking if liked:", error);
+    }
+  };
+  useEffect(() => {
+    getlikes();
+  }, [id]);
 
   useEffect(() => {
-    const fetchLikedStatus = async (id: number) => {
+    const fetchCourse = async () => {
+      try {
+        const response = await api.get("/index?limit=3");
+        console.log(response.data);
+      } catch (error: any) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchCourse();
+  }, []);
+
+  useEffect(() => {
+    const fetchLikedStatus = async () => {
       try {
         const response = await api.get(`/comments/${id}/isLiked`);
         setIsLiked(response.data.isLiked);
@@ -212,7 +243,7 @@ const CoursePdf: React.FC = () => {
         );
       }
     };
-    fetchLikedStatus(id);
+    fetchLikedStatus();
   }, [id]);
 
   return (
@@ -242,7 +273,7 @@ const CoursePdf: React.FC = () => {
 
       <div
         className="mt-6 mb-10 "
-        style={{ width: "650px", margin: "15px auto " }}
+        style={{ width: "520px", margin: "12px auto " }}
       >
         {comments.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400">
@@ -258,7 +289,7 @@ const CoursePdf: React.FC = () => {
                 <img
                   src={`http://localhost:8000/storage/${comment.user?.profile_photo}`}
                   alt={comment.user.name}
-                  className="w-12 h-12 rounded-full object-cover mb-4 sm:mb-0"
+                  className="w-12 h-12 rounded-full object-contain mb-4 sm:mb-0"
                 />
                 <div className="sm:flex-1">
                   <p className="font-semibold text-gray-800 dark:text-gray-100">
@@ -294,9 +325,15 @@ const CoursePdf: React.FC = () => {
                   )}
                 </div>
 
-                <div className="flex space-x-4 ml-auto mt-2">
-                  <button className="text-black" onClick={handleLike}>
-                    {isLiked ? <FcLike /> : <FiHeart />}
+                <div className="flex space-x-4 mt-2">
+                  <button
+                    className="text-black flex items-center gap-1"
+                    onClick={() => handleLike(comment.id)}
+                  >
+                    <span className="text-xs">
+                      {commentLikeCounts[comment.id] || 0}
+                    </span>
+                    {commentLikes[comment.id] ? <FcLike /> : <FiHeart />}
                   </button>
                   <button
                     className="text-blue-500 hover:text-blue-700"

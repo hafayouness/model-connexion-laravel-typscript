@@ -1,4 +1,3 @@
-// authContext.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

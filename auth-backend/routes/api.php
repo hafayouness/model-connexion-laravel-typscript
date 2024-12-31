@@ -50,15 +50,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::get('/courses/{id}/comments', [CourseController::class, 'getComments']);
-    Route::post('/comments/{id}/like', [CommentController::class, 'toggleLike']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/courses/{courseId}/comments', [CommentController::class, 'index']);
+        Route::post('/comments/{commentId}/like', [CommentController::class, 'toggleLike']);
+        Route::get('/comments/{commentId}/isLiked', [CommentController::class, 'isLiked']);
+    });
     Route::put('/comments/{id}',[CommentController::class, 'updateComment']);
     Route::delete('/comments/{id}',[CommentController::class, 'deleteComment']);
-    Route::get('comments/{id}/isLiked', [CommentController::class, 'isLiked']);
-    Route::get('/comments/{id}/liked', [CommentController::class, 'getLikedComments']);
-   
+    Route::get('/comments', [CourseController::class, 'getLatestComments']);
     Route::post('/contact', [ContactController::class, 'store']);
 
-
+    
 
 
 

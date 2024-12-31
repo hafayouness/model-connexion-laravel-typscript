@@ -14,5 +14,9 @@ class Course extends Model
     {
         return $this->belongsToMany(User::class, 'likes', 'course_id', 'user_id');
     }
-
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+ 
 }

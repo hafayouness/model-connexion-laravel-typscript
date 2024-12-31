@@ -47,7 +47,7 @@ const SideBar: React.FC = () => {
             src={`http://localhost:8000/storage/${user?.profile_photo}`}
             alt="Profile"
             // className="w-12 h-12 rounded-full object-contain"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
         </div>
 
@@ -55,13 +55,15 @@ const SideBar: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        <div
-          onClick={() => navigate("/dashboard")}
-          className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-3 rounded-md"
-        >
-          <MdSpaceDashboard />
-          <span>Dashboard</span>
-        </div>
+        {user?.role === "professor" && (
+          <div
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center space-x-3 cursor-pointer hover:bg-gray-700 p-3 rounded-md"
+          >
+            <MdSpaceDashboard />
+            <span>Dashboard</span>
+          </div>
+        )}
         {user?.role === "professor" && (
           <div
             onClick={() => navigate("/create-course")}

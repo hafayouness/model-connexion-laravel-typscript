@@ -37,6 +37,7 @@ interface CourseCardProps {
   type: string;
   level: string;
   sub_level: string;
+  isAuthenticated: boolean;
 }
 interface Course {
   id: string;
@@ -46,6 +47,7 @@ interface Course {
   type: string;
   level: string;
   sub_level: string;
+  isAuthenticated: boolean;
 }
 interface UpdateCourseProps {
   id?: string;
@@ -60,19 +62,24 @@ interface DescriptionProps {
 interface CommentSectionProps {
   id: number;
 }
-// interface User {
-//   name: string;
-//   profilePicture: string;
-// }
 
 interface Comment {
   id: number;
   comment: string;
   user: User;
-
-  likedByUser: boolean;
-  userId: number;
+  isLiked: boolean;
+  likeCount: number;
 }
+// interface Comment {
+//   id: number;
+//   user: {
+//     name: string;
+//     profile_photo: string;
+//   };
+//   comment: string;
+//   likes: number;
+//   likedByUser: boolean;
+// }
 
 interface ContactFormData {
   name: string;
@@ -83,4 +90,24 @@ interface ValidationErrors {
   name?: string[];
   email: string[];
   message: string[];
+}
+interface Testimonial {
+  id: number;
+  name: string;
+  comment: string;
+  image: string;
+}
+
+interface TeamMember {
+  id: number;
+  name: string;
+  role: string;
+  image: string;
+}
+
+interface Stats {
+  students: number;
+  courses: number;
+  ratings: number;
+  experience: number;
 }

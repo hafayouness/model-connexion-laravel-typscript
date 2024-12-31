@@ -204,8 +204,8 @@ class CourseController extends Controller
 
        
         $comments = Comment::where('course_id', $id)
-            ->with('user:id,name,profile_photo') 
-            ->get();
+            ->with('user:id,name,profile_photo')->get();
+        
 
         return response()->json($comments);
     } catch (\Exception $e) {
@@ -214,7 +214,22 @@ class CourseController extends Controller
      }
    }
 
-
+   public function getLatestComments()
+   {
+       try {
+           $comments = Comment::with(['user:id,name,profile_photo', 'course:id,title'])
+               ->orderBy('created_at', 'desc')
+               ->limit(3)
+               ->get();
+   
+           return response()->json($comments);
+       } catch (\Exception $e) {
+           return response()->json([
+               'message' => 'An error occurred',
+               'error' => $e->getMessage()
+           ], 500);
+       }
+   }
 
  
 

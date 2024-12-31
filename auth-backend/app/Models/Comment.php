@@ -9,7 +9,12 @@ class Comment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['comment', 'user_id', 'course_id'];
+    protected $fillable = ['comment', 'user_id', 'course_id' ];
+    protected $appends = ['is_liked', 'likes_count'];
+    protected $casts = [
+        'is_liked' => 'boolean',
+    ];
+    
 
     
     public function user()
@@ -26,8 +31,26 @@ class Comment extends Model
     
     public function likes()
     {
-    return $this->hasMany(CommentLike::class); 
+        return $this->belongsToMany(User::class, 'comments_likes', 'comment_id', 'user_id');
+        return $this->hasMany(Like::class);
+    }
+    
+    public function getIsLikedAttribute()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        return $this->likes()->where('user_id', auth()->id())->exists();
     }
 
+    // Accesseur pour likes_count
+    public function getLikesCountAttribute()
+    {
+        return $this->likes()->count();
+    }
+
+   
+    
+     
 }
 

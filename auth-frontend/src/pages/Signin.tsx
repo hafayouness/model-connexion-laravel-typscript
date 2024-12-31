@@ -12,11 +12,11 @@ const Signin: React.FC = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
 
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     navigate("/dashboard");
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
