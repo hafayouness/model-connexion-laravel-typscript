@@ -29,11 +29,15 @@ Route::group([], function () {
     Route::post('/signin', [AuthController::class, 'signin']);
 });
 
-// Routes nécessitant une authentification (auth:sanctum)
+
 Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
     Route::put('/user/{id}', [AuthController::class, 'update']);
+    // Route::get('/users', [AuthController::class, 'getAllUsers']);
+    Route::middleware('throttle:api')->group(function () {
+        Route::get('/users', [AuthController::class, 'getAllUsers']);
+    });
     
 
     
@@ -71,6 +75,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::middleware('throttle:500,1')->group(function () {
-    Route::get('/users', [AuthController::class, 'getAllUsers']);
-});
+

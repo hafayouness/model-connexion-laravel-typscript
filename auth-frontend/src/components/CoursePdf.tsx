@@ -51,7 +51,6 @@ const CoursePdf: React.FC = () => {
     }
   }, [comments]);
   const handleLike = async (commentId: number) => {
-    // Optimistic update
     setCommentLikes((prev) => ({
       ...prev,
       [commentId]: !prev[commentId],
