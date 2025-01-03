@@ -29,14 +29,17 @@ const Dashboard = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null); // Utilisateur connecté
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        const usersResponse = await api.get("/users");
+        const currentUserResponse = await api.get("/users");
+        setCurrentUser(currentUserResponse.data);
 
+        const usersResponse = await api.get("/users");
         const usersData = Array.isArray(usersResponse.data)
           ? usersResponse.data
           : usersResponse.data.users || [];
@@ -48,7 +51,6 @@ const Dashboard = () => {
           : [];
         setCourses(coursesData);
 
-        // Fetch comments
         const commentsResponse = await api.get("/comments");
         const commentsData = Array.isArray(commentsResponse.data)
           ? commentsResponse.data
@@ -66,8 +68,6 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  console.log("Users data:", users);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -84,10 +84,20 @@ const Dashboard = () => {
     );
   }
 
+  if (!currentUser || currentUser.role !== "professor") {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-red-500 text-center">
+          Accès refusé : cette page est réservée aux professeurs.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-2xl font-bold mb-6 text-center">Dashboard</h1>
-
+      {/* Tableaux des utilisateurs, cours, et commentaires */}
       <section className="w-full md:w-[48%] mx-auto mb-5">
         <h2 className="text-xl font-semibold mb-4 text-center">Users Table</h2>
         <table className="w-full table-auto border-collapse border border-gray-300">
